@@ -1,6 +1,7 @@
 #include <raylib.h>
 #include<stdio.h>
 #include<stdlib.h>
+#include<math.h>
 typedef struct tree tree;
 struct tree {
   int val;
@@ -17,25 +18,35 @@ void Drawnode(int val,int posx,int posy){
 }
 
 
-/*void DrawTree(tree* a,int x,int y){
-    if(a!=NULL){
-        DrawTree(a->left,x-40,y+50);
-         Drawnode(a->val,x,y);
-        
-         
-         DrawTree(a->right,x+20,y+50);
-         
-    }*/
- void DrawTree(tree* a,int x,int y,int l){
+/*
+ void DrawTree(tree* a,int x,int y,int l,int depth){
         if(a!=NULL){
            
         Drawnode(a->val,x,y);
-        l+=2;
-        DrawTree(a->left,screenWidth/l,y+50,l);
         
-        DrawTree(a->right,2*x-screenWidth/l,y+50,l);
+        DrawTree(a->left,x-(l/pow(2,depth)),y+150,l/2,depth+1);
+        
+        DrawTree(a->right,x+(l/pow(2,depth)),y+150,l/2,depth+1);
+        
         }   
-}
+}*/
+//testing....
+ void DrawTree(tree* a,int x,int y,int l,int depth){
+        if(a!=NULL){
+           
+        Drawnode(a->val,x,y);
+        
+        DrawTree(a->left,x-(l/pow(2,depth)),y+150,l/2,depth);
+        
+        DrawTree(a->right,x+(l/pow(2,depth)),y+150,l/2,depth);
+        
+        } 
+ }
+
+
+
+
+
 
 
 tree* newnode(int x){
@@ -96,7 +107,7 @@ for(int i=0;i<6;i++){
         ClearBackground(BRITISH);
 
     
-    DrawTree(a,screenWidth/2,25,2);
+    DrawTree(a,screenWidth/2,25,screenWidth/2,1);
     
     
     
