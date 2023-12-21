@@ -1,47 +1,45 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <raylib.h>
+#include "Ligma.h"
 
-int main(int argc, char *argv[]) {
+const int screenWidth = 1080;
+const int screenHeight = 700;
+
+int main() {
 	
-	 const int screenWidth = 800;
-    const int screenHeight = 450;
+tree* a = newnode(10,3);
+int x;
 
-    InitWindow(screenWidth, screenHeight, "Testing RayLib");
+for(int i=0;i<12;i++){
+  scanf("%d",&x);
+  insert(&a,x, a->Nodes); 
+   
+}
 
-    // TODO: Load resources / Initialize variables at this point
+    InitWindow(screenWidth, screenHeight, "Arbre n-aire ");
+
+
 
     SetTargetFPS(60);
-    //--------------------------------------------------------------------------------------
 
-    // Main game loop
-    while (!WindowShouldClose())    // Detect window close button or ESC key
-    {
-        // Update
-        //----------------------------------------------------------------------------------
-        // TODO: Update variables / Implement example logic at this point
-        //----------------------------------------------------------------------------------
 
-        // Draw
-        //----------------------------------------------------------------------------------
+    while (!WindowShouldClose()) {
+        
+        
+        
         BeginDrawing();
+        ClearBackground(BLACK);
 
-            ClearBackground(BLACK);
-
-            // TODO: Draw everything that requires to be drawn at this point:
-
-            DrawText("YEPEE YAY! There will be no wedding bells for today!", 130, 200, 20, LIGHTGRAY);  // Example
-
+    
+    	DrawTree(a,screenWidth/2,25,screenWidth/3,1);
+    
+    
+     
         EndDrawing();
-        //----------------------------------------------------------------------------------
+        
+        
     }
 
-    // De-Initialization
-    //--------------------------------------------------------------------------------------
+     
+    CloseWindow();
 
-    // TODO: Unload all loaded resources at this point
-
-    CloseWindow(); 
-    
-	return 0;
+    return 0;
 }
