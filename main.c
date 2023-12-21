@@ -1,4 +1,4 @@
-#include "Ligma.h"
+#include "Tree.h"
 
 const int screenWidth = 1080;
 const int screenHeight = 700;
