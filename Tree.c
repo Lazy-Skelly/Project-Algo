@@ -18,26 +18,26 @@ void DrawTree(tree* a,int x,int y,int l,int depth){
          if (a->child[0]!= NULL) {
        
          DrawTree( a->child[0] ,x-3*(l/k)/2,y+300,l,depth+1);
-         DrawLine( x-9 , y-9 , x-3*(l/k)/2-9 , y+300-9 , BLUE );
+         DrawLine( x-9 , y-9 , x-3*(l/k)/2 , y+300-9 , BLUE );
          }
         
          if (a->child[1] != NULL) {
         
          DrawTree(a->child[1],x-(l/k)/2,y+300,l,depth+1);
-         DrawLine(x+9,y-9,x-(l/k)/2+9,y+300-9,BLUE);
+         DrawLine(x-9,y-9,x-(l/k)/2,y+300-9,BLUE);
          }
         
          
          if (a->child[2] != NULL) {
         
         DrawTree(a->child[2],x+(l/k)/2,y+300,l,depth+1);
-        DrawLine(x+9,y-9,x+(l/k)/2+9,y+300-9,BLUE);
+        DrawLine(x+9,y-9,x+(l/k)/2,y+300-9,BLUE);
          }
          
          if (a->child[3] != NULL) {
         
         DrawTree(a->child[3],x+3*(l/k)/2,y+300,l,depth+1);
-        DrawLine(x+9,y-9,x+3*(l/k)/2+9,y+300-9,BLUE);
+        DrawLine(x+9,y-9,x+3*(l/k)/2,y+300-9,BLUE);
          }
         
          
