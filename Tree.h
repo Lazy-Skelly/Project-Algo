@@ -12,7 +12,7 @@ typedef struct tree tree;
 struct tree {
 	int val;
 	int Nodes; 
-  	tree** Child;
+  	tree** child;
   	 
 };
 
