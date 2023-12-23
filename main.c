@@ -87,7 +87,7 @@ int l=4;
    
         //camera commands
          if(IsMouseButtonDown(0)) cd.zoom+=0.02;
-          if(IsMouseButtonDown(1)) cd.zoom-=0.02; 
+          if(IsMouseButtonDown(1)&& cd.zoom>0.01) cd.zoom-=0.02; 
           if(cd.zoom<0){
           	cd.zoom =0;
 		  }
