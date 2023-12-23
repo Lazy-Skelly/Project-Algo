@@ -63,10 +63,10 @@ tree* newnode(int x, int Nodes){
     t->val=x;
     t->Nodes = Nodes;
 
-    t->Child = MAKE(tree*,Nodes);
+    t->child = MAKE(tree*,Nodes);
     
     for(int i = 0; i<t->Nodes;i++){
-    	t->Child[i] = NULL;
+    	t->child[i] = NULL;
 	}
     
     return t;
@@ -93,14 +93,14 @@ void insert(tree** t,int x, int Nodes){
     }else{
       
 		for(int i = 0; i<(*t)->Nodes;i++){
-    		if((*t)->Child[i] == NULL){
-   	 			(*t)->Child[i] = newnode(x, (*t)->Nodes);
+    		if((*t)->child[i] == NULL){
+   	 			(*t)->child[i] = newnode(x, (*t)->Nodes);
    	 			break;
-			}else if((*t)->Child[i]->val >= x){
-				insert(&((*t)->Child[i]), x, (*t)->Nodes);
+			}else if((*t)->child[i]->val >= x){
+				insert(&((*t)->child[i]), x, (*t)->Nodes);
 				break;
 			}else if(i == (*t)->Nodes -1){
-				insert(&((*t)->Child[i]), x,  (*t)->Nodes);
+				insert(&((*t)->child[i]), x,  (*t)->Nodes);
 			}
 		}
 	}
