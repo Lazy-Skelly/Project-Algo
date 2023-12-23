@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <raylib.h>
@@ -7,6 +8,7 @@
 
 #define MAKE(x,y) (x*)malloc(y * sizeof(x)) 
 #define BRITISH CLITERAL(Color){0,66,37,255}
+#define MAX 4
 
 typedef struct tree tree;
 struct tree {
