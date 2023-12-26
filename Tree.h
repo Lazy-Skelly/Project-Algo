@@ -15,6 +15,8 @@ struct tree {
 	int val;
 	int Nodes; 
   	tree** child;
+        int x; 
+        int y;
   	 
 };
 
