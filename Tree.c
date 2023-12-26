@@ -2,15 +2,19 @@
 
 
 
-void Drawnode(int val,int posx,int posy){
-        DrawCircle(posx,posy,18,BLUE);
-        DrawText(TextFormat("%d",val),posx-2,posy-6,15,WHITE);
+void Drawnode(int val,int posx,int posy,Color c){
+        DrawCircle(posx,posy,20,c);
+        DrawText(TextFormat("%d",val),posx-6,posy-6,15,WHITE);
 }
 
-void DrawTree(tree* a,int x,int y,int l,int depth){
+void DrawTree(tree* a,int x,int y,int l,int depth){ 
+
+    
         if(a!=NULL){
            
-        Drawnode(a->val,x,y);
+        Drawnode(a->val,x,y,BLUE);
+        a->x=x;
+        a->y=y;
         
          int k = pow(4,depth)-1;
         
@@ -98,7 +102,15 @@ void insert(tree** t,int x, int Nodes){
 } 
 
 
-
+void insert2pos(tree* *t,int val,tree* *q){
+    int p;
+    scanf("%d",&p);
+    if((*t)->child[p]==NULL){
+        (*t)->child[p]=newnode(val,4);
+        *q=(*t)->child[p];
+    }
+    else insert2(&((*t)->child[p]),val,&*q);
+}
 
 
 
