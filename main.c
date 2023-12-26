@@ -119,7 +119,7 @@ tree* p;
                       
         
           //example 50 hya lazem un scanf pour lire la valeur
-          insert2(&a,50,&p);   
+          insert2pos(&a,50,&p);   
           t0=GetTime();      
           new=true;           
         }
