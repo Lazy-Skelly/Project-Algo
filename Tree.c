@@ -109,7 +109,7 @@ void insert2pos(tree* *t,int val,tree* *q){
         (*t)->child[p]=newnode(val,4);
         *q=(*t)->child[p];
     }
-    else insert2(&((*t)->child[p]),val,&*q);
+    else insert2pos(&((*t)->child[p]),val,&*q);
 }
 
 
