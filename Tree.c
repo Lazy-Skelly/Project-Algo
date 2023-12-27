@@ -9,36 +9,35 @@ void Drawnode(int val,int posx,int posy,Color c){
 
 void DrawTree(tree* a,int x,int y,int l,int depth){ 
 
-    
         if(a!=NULL){
            
-        Drawnode(a->val,x,y,BLUE);
+        Drawnode(a->val,x,y,a->color);
         a->x=x;
         a->y=y;
         
          int k = pow(4,depth)-1;
         
         
-         if (a->child[0]!= NULL) {
+         if (a->child[0]!= NULL && a->Nodes >= 1) {
        
          DrawTree( a->child[0] ,x-3*(l/k)/2,y+300,l,depth+1);
          DrawLine( x-9 , y-9 , x-3*(l/k)/2 , y+300-9 , BLUE );
          }
         
-         if (a->child[1] != NULL) {
+         if (a->child[1] != NULL && a->Nodes >= 2) {
         
          DrawTree(a->child[1],x-(l/k)/2,y+300,l,depth+1);
          DrawLine(x-9,y-9,x-(l/k)/2,y+300-9,BLUE);
          }
         
          
-         if (a->child[2] != NULL) {
+         if (a->child[2] != NULL && a->Nodes >= 3) {
         
         DrawTree(a->child[2],x+(l/k)/2,y+300,l,depth+1);
         DrawLine(x+9,y-9,x+(l/k)/2,y+300-9,BLUE);
          }
          
-         if (a->child[3] != NULL) {
+         if (a->child[3] != NULL && a->Nodes >= 4) {
         
         DrawTree(a->child[3],x+3*(l/k)/2,y+300,l,depth+1);
         DrawLine(x+9,y-9,x+3*(l/k)/2,y+300-9,BLUE);
@@ -57,7 +56,7 @@ tree* newnode(int x, int Nodes){
     t->Nodes = Nodes;
 
     t->child = MAKE(tree*,Nodes);
-    
+    t->color = BLUE;
     for(int i = 0; i<t->Nodes;i++){
     	t->child[i] = NULL;
 	}
@@ -80,14 +79,16 @@ tree* newnode2(int x){
 }
 
 
-void insert(tree** t,int x, int Nodes){
+tree* insert(tree** t,int x, int Nodes){
     if(*t==NULL){
         *t=newnode(x,Nodes);
+        return *t;
     }else{
       
 		for(int i = 0; i<(*t)->Nodes;i++){
     		if((*t)->child[i] == NULL){
    	 			(*t)->child[i] = newnode(x, (*t)->Nodes);
+   	 			return (*t)->child[i];
    	 			break;
 			}else if((*t)->child[i]->val >= x){
 				insert(&((*t)->child[i]), x, (*t)->Nodes);
@@ -96,13 +97,11 @@ void insert(tree** t,int x, int Nodes){
 				insert(&((*t)->child[i]), x,  (*t)->Nodes);
 			}
 		}
-	}
-      
-         
+	}       
 } 
 
 
-void insert2pos(tree* *t,int val,tree* *q){
+void insert2pos(tree** t,int val,tree** q){
     int p;
     scanf("%d",&p);
     if((*t)->child[p]==NULL){
@@ -112,16 +111,19 @@ void insert2pos(tree* *t,int val,tree* *q){
     else insert2pos(&((*t)->child[p]),val,&*q);
 }
 
-bool research(tree** t,int x){
-    if((*t)->val==x){
+bool research(tree* t,int x){
+	if(t){
+    if(t->val==x){
         return true;
-    }else if((*t)->val!=x){
-        for(int i=0;i<(*t)->Nodes;i++){
-        return research(&(*t)->child[i],int x);
+    }else if(t->val!=x){
+        for(int i=0;i<t->Nodes;i++){
+        	return research(t->child[i], x);
         }
     }
-    return false;
+	}
+	return false;
 }
+/*
  void delete(tree** t,int x){
     if (research(*t,x)){
         if((*t)->Nodes==0){
@@ -132,7 +134,19 @@ bool research(tree** t,int x){
             Nodes--;
         }
     }
-
+    */
+int GetDepth(tree* a){
+	int Depth =0;
+	if(a != NULL){
+		for(int i =0; i<a->Nodes;i++){
+			int temp = 1 + GetDepth(a->child[i]);
+			if(temp>Depth){
+				Depth = temp;
+			}
+		}
+	}
+	return Depth;	
+}
 
 
 
