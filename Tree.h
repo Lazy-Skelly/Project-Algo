@@ -1,10 +1,13 @@
 #pragma once
 
+
 #include <raylib.h>
 #include<stdio.h>
 #include<stdlib.h>
 #include<math.h>
 #include <time.h>
+#include <assert.h>
+
 
 #define MAKE(x,y) (x*)malloc(y * sizeof(x)) 
 #define BRITISH CLITERAL(Color){0,66,37,255}
@@ -31,4 +34,10 @@ tree* newnode(int x, int Nodes);
  
 tree* insert(tree** t,int x, int Nodes);
 
+bool research(tree* t,int x);
+
 int GetDepth(tree* a);
+
+void FreeTree(tree** a);
+
+int GuiFloatBox(Rectangle bounds, const char* text, float* value, int minValue, int maxValue, bool editMode);
