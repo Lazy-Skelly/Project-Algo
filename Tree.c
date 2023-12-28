@@ -133,7 +133,7 @@ void delete(tree** t,int x){
        do{
        p->val=p->child[Nodes]->val;
        p=p->child[Nodes];
-       }while(p->Nodes!=0);
+       }while(p->child[Nodes]->Nodes!=0);
         p->val=p->child[Nodes]->val;
         p->child[Nodes]=NULL;
         p->Nodes--;
