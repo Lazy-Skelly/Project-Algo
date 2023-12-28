@@ -129,7 +129,53 @@ bool research(tree* t,int x){
 	return false;
 }
 
-void delete(tree** t,int x){
+ int lastNode(tree* t){
+   int i=0;
+   if(t->child==NULL){
+   return -1;
+   }
+    
+  while(t->child[i+1]!=NULL){
+      i++;
+  }
+  return i;
+  }
+  
+ void delete(tree** t,int x){
+    tree* p=*t;
+    tree* q;
+    int i;
+    int j=0;
+   if(p->val==x){
+              
+       if(p->child=!NULL)){
+       while(lastNode(p)!=-1){
+       p->val=p->child[lastNode(p)]->val;
+       p=p->child[lastNode(p)];
+       }
+         free(p);
+       }else{
+           if(lastNode(q)>1){
+               while(q->child[j]!=p){
+                   j++;
+               }
+            while(j<=lastNode(q)-1){
+                q->child[j]= q->child[j+1];
+                j++;
+            }
+         free(q->child[j];
+       }
+       }
+        else{
+            for( i=0;i<(*t)->Nodes){
+                q=*t;
+                delete((*t)->child[i],int x);
+            }
+        }
+    }
+ }
+
+/*void delete(tree** t,int x){
     tree* p=*t;
     tree* q;
    if(p->val==x){
@@ -162,7 +208,7 @@ void delete(tree** t,int x){
     }
     
 
-/*
+
  void delete(tree** t,int x){
     if (research(*t,x)){
         if((*t)->Nodes==0){
