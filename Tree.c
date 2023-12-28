@@ -123,6 +123,39 @@ bool research(tree* t,int x){
 	}
 	return false;
 }
+
+
+void delete(tree** t,int x){
+    tree* p=*t;
+    tree* q;
+   if(p->val==x){
+       if(p->Nodes>0){
+       do{
+       p->val=p->child[Nodes]->val;
+       p=p->child[Nodes];
+       }while(p->Nodes!=0);
+        p->val=p->child[Nodes]->val;
+        p->child[Nodes]=NULL;
+        p->Nodes--;
+       }else{
+       int j=0;
+       while(q->child[j]!=p){
+           j++
+           
+       }
+       do{
+           q->child[j]->val= q->child[j+1]->val;
+           j++;
+       }while(j<(Nodes-1));
+       q->child[Nodes]=NULL;
+       q->Nodes--;
+        else{
+              q=p;
+            for(int i=0;i<(*t)->Nodes){
+                delete((*t)->child[i],int x);
+            }
+        }
+    }
 /*
  void delete(tree** t,int x){
     if (research(*t,x)){
