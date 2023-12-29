@@ -13,7 +13,10 @@ int main(){
 	int smth = 0;
 	int del =0;
   	bool start=false;
-	double t0;
+	double t0=0; 
+  bool new=false;
+  bool searching=false;
+  bool found = false;
 
 	insert(&a,1,4);
 	int l=GetDepth(a);
@@ -53,8 +56,22 @@ int main(){
 	bool change = false;
 	bool D = false;
 
+
+nitAudioDevice();        
+
+     Music music = LoadMusicStream("correct-choice.mp3");
+     Music musicc = LoadMusicStream("click-button.mp3");
+     Music music2 = LoadMusicStream("playerno.mp3");
+	
+
     while (!WindowShouldClose()) {
-          
+
+           l=GetDepth(a);
+         UpdateMusicStream(music);
+         UpdateMusicStream(musicc);
+         UpdateMusicStream(music2);
+
+	    
         BeginDrawing();
         BeginMode2D(cd);
         
@@ -66,30 +83,76 @@ int main(){
         // l=3:  2^(3-2)= 2*screenWidth space needed
         // etc...
        
-        if(!start){
-            DrawText(TextFormat("PRESS SPACE TO INSERT VALUE %d",GetDepth(a)),0,-20,50,GOLD);                    
-        }           
+        if(!new && !searching){
+            DrawText("PRESS SPACE TO INSERT A VALUE",0,-100,50,GOLD);           
+            DrawText("PRESS TAB TO SEARCH A VALUE",0,-180,50,GOLD);
+        }    
            
-        if(IsKeyReleased(32)){
-          	start=true;    
-   			if(p){
-   				p->color = BLUE;	
-			}
-		
-//			p = insert(&a,RANDOM(1000),2);
-//		 	p->color = RED; 
-			printf("%d",research(a,5100));
-          	t0=GetTime();
-			l = GetDepth(a) ;         
-        }
-      
-       	DrawTree(a,screenWidth/2,50,pow(2,l-2)*screenWidth,1);
        
-/*     	if(GetTime()-t0>2 && p){
-		   	p->color = BLUE;
-		   	p = NULL;
-		} */      
+        if(IsKeyReleased(32)&& !searching){
+            
+          printf("\ndonner la valeur\n");
+          scanf("%d",&n);
+          insert2pos(&a,n,&p);   
+        //  p=insert(&a,n,4);
+          t0=GetTime();   
+          PlayMusicStream(musicc);          
+          new=true;           
+        }
+   
+       if(new) {
+           DrawTree(a,screenWidth/2,50,pow(2,l-2)*screenWidth,1);
+           Drawnode(p->val,p->x,p->y,RED); 
+           
       
+           }
+       else
+            DrawTree(a,screenWidth/2,50,pow(2,l-2)*screenWidth,1);
+     
+        
+          
+         if(GetTime()-t0>0.05 && t0!=0) {
+             StopMusicStream(musicc);
+         if(GetTime()-t0>0.5 && t0!=0) new=false;
+         
+         
+        
+          } 
+         
+        
+        
+        
+        
+        
+        if(IsKeyReleased(258) && !new){
+             printf("\ndonner la valeur à rechercher\n");
+          
+          scanf("%d",&n);
+            searching =true;
+            t0=GetTime();
+         }
+       
+        if(searching){
+         
+         if(research(a,n,&p)){ 
+         
+         Drawnode(p->val,p->x,p->y,GREEN);
+         DrawText("FOUND",-150,-50,50,GREEN);
+         
+         PlayMusicStream(music);
+         } 
+               
+         else{ DrawText("NOT FOUND",-150,-50,50,RED);
+         
+         PlayMusicStream(music2);} 
+         
+        }
+        
+          if(GetTime()-t0>0.5){
+            if(GetMusicTimePlayed(music)>0.4) StopMusicStream(music);
+            if(GetMusicTimePlayed(music2)>0.4) StopMusicStream(music2);
+            searching=false;
+            }
 	    
 //        GuiFloatBox((Rectangle){ (10+cd.target.x-cd.offset.x)*cd.zoom, (100+cd.target.y-cd.offset.y)*cd.zoom, 200*1/cd.zoom, 50*1/cd.zoom }, NULL, &smth, -1000000.0, 1000000.0, true);
  //       GuiButton((Rectangle){20,50,100,100},"hallo");
