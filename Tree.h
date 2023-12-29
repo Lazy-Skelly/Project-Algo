@@ -36,8 +36,16 @@ tree* insert(tree** t,int x, int Nodes);
 
 bool research(tree* t,int x);
 
+int PopMaximum(tree** t);
+
+int PopMinimum(tree** t);
+
+int lastNode(tree* t);
+
+void Delete(tree** t,int x);
+
 int GetDepth(tree* a);
 
 void FreeTree(tree** a);
 
-int GuiFloatBox(Rectangle bounds, const char* text, float* value, int minValue, int maxValue, bool editMode);
+int GuiFloatBox(Rectangle bounds, const char* text, int* value, int minValue, int maxValue, bool editMode);

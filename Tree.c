@@ -3,7 +3,7 @@
 
 #include "raygui.h"
 
-int guiFloatingPointIndex = 0;
+
 
 void Drawnode(int val,int posx,int posy,Color c){
         DrawCircle(posx,posy,20,c);
@@ -54,7 +54,7 @@ void DrawTree(tree* a,int x,int y,int l,int depth){
 
 tree* newnode(int x, int Nodes){
     tree* t;
-    t=MAKE(tree,1);//malloc(sizeof(tree));
+    t=MAKE(tree,1);
     t->val=x;
     t->Nodes = Nodes;
 
@@ -105,7 +105,6 @@ tree* insert(tree** t,int x, int Nodes){
 	}       
 } 
 
-
 void insert2pos(tree** t,int val,tree** q){
     int p;
     scanf("%d",&p);
@@ -121,105 +120,153 @@ bool research(tree* t,int x){
     if(t->val==x){
         return true;
     }else if(t->val!=x){
+    	bool found = false;
         for(int i=0;i<t->Nodes;i++){
-        	return research(t->child[i], x);
+        	found = found || research(t->child[i], x);
         }
+        return found;
     }
 	}
 	return false;
 }
 
+int PopMaximum(tree** t){
+	if(*t){
+		int last = lastNode(*t);
+		int val;
+		if(last == -1){
+			val = (*t)->val;
+			FreeTree(t);
+			return val;
+		}else{
+			if((*t)->child[last]->val < (*t)->val){
+				val = (*t)->val;
+				(*t)->val = PopMaximum(&((*t)->child[last]));
+				return val;	
+			}
+			return PopMaximum(&((*t)->child[last]));
+		}	
+	}
+}
+
+int PopMinimum(tree** t){
+	if(*t){
+		int last = lastNode(*t);
+		int val;
+		if(last == -1){
+			val = (*t)->val;
+			FreeTree(t);
+			return val;
+		}else{
+			if((*t)->child[0]->val > (*t)->val){
+				val = (*t)->val;
+				(*t)->val = PopMinimum(&((*t)->child[0]));
+				return val;	
+			}
+			return PopMinimum(&((*t)->child[0]));
+		}
+	}
+}
+
  int lastNode(tree* t){
+ 	if(t){
    int i=0;
-   if(t->child==NULL){
+   if(t->child[i]==NULL){
    return -1;
    }
     
-  while(t->child[i+1]!=NULL){
+  while(t->child[i+1]!=NULL && i+1<t->Nodes){
       i++;
   }
   return i;
+	}
   }
   
- void delete(tree** t,int x){
+void Delete(tree** t,int x){
+	tree* p =*t;
+	if(p){
+		int last = lastNode(*t);
+		int found=-1;
+		if(last != -1){
+			for(int i=0; i<=last;i++){
+				if(p->child[i]->val == x){
+					found = i;
+					break;
+				}
+			}
+			if(found != -1){
+				if(found < last){
+					if(lastNode(p->child[found]) == -1){
+						int end=found;
+						for(int i =found+1;i<=last;i++){
+							if(lastNode(p->child[i]) == -1){
+								end =i;
+							}else{
+								break;
+							}
+						}
+						for(int i = found; i < end;i++){
+							p->child[i]->val = p->child[i+1]->val;
+						}
+						if(end == last){
+							FreeTree(&(p->child[end]));
+						}else{
+							p->child[end]->val = PopMinimum(&(p->child[end+1]));							
+						}				
+
+					}else{
+						p->child[found]->val = PopMaximum(&(p->child[found]->child[lastNode(p->child[found])]));
+					}					
+				}else{
+					if(lastNode(p->child[found]) == -1){
+						FreeTree(&(p->child[found]));						
+					}else{
+						p->child[found]->val = PopMaximum(&(p->child[found]->child[lastNode(p->child[found])]));
+					}					
+				}
+			}else{
+				for(int i=0; i<=last;i++){
+					Delete(&(p->child[i]),x);
+				}	
+			}
+		}		
+	}
+}  
+/*
+void Delete(tree** t,int x){
     tree* p=*t;
-    tree* q;
     int i;
     int j=0;
-   if(p->val==x){
+	if(p){
+	
+   	if(p->val==x){
               
-       if(p->child=!NULL)){
-       while(lastNode(p)!=-1){
-       p->val=p->child[lastNode(p)]->val;
-       p=p->child[lastNode(p)];
-       }
-         free(p);
-       }else{
-           if(lastNode(q)>1){
-               while(q->child[j]!=p){
+       	if(p->child[0] != NULL){
+       		while(lastNode(p)!=-1){
+       			p->val=p->child[lastNode(p)]->val;
+       			p=p->child[lastNode(p)];
+       		}
+        	//free(p);
+       	}else{
+           	if(lastNode(p)>1){
+               	while(p->child[j]!=p){
                    j++;
-               }
-            while(j<=lastNode(q)-1){
-                q->child[j]= q->child[j+1];
-                j++;
-            }
-         free(q->child[j];
+               	}
+          		while(j<lastNode(p)){
+            		p->child[j]= p->child[j+1];
+            	    j++;
+           		}
+         		//free(q->child[j]);
+       		}
        }
-       }
-        else{
-            for( i=0;i<(*t)->Nodes){
-                q=*t;
-                delete((*t)->child[i],int x);
-            }
+    }else{
+        for( i=0;i<(*t)->Nodes;i++){           
+            Delete(&((*t)->child[i]), x);
         }
     }
+   	}
  }
-
-/*void delete(tree** t,int x){
-    tree* p=*t;
-    tree* q;
-   if(p->val==x){
-       if(p->Nodes>0){
-       do{
-       p->val=p->child[Nodes]->val;
-       p=p->child[Nodes];
-       }while(p->child[Nodes]->Nodes!=0);
-        p->val=p->child[Nodes]->val;
-        p->child[Nodes]=NULL;
-        p->Nodes--;
-       }else{
-       int j=0;
-       while(q->child[j]!=p){
-           j++
-           
-       }
-       do{
-           q->child[j]->val= q->child[j+1]->val;
-           j++;
-       }while(j<(Nodes-1));
-       q->child[Nodes]=NULL;
-       q->Nodes--;
-        else{
-              q=p;
-            for(int i=0;i<(*t)->Nodes){
-                delete((*t)->child[i],int x);
-            }
-        }
-    }
-    
-
-
- void delete(tree** t,int x){
-    if (research(*t,x)){
-        if((*t)->Nodes==0){
-            *t=NULL;
-        }else{
-            (*t)->val=(*t)->child[Nodes]->val;
-            (*t)->child[Nodes]=NULL;
-            Nodes--;
-        }
-    }
-    */
+*/
 int GetDepth(tree* a){
 	int Depth =0;
 	if(a != NULL){
@@ -242,6 +289,7 @@ void KillChild(tree** a){
 		if(!done){
 			for(int i=0;i<(*a)->Nodes;i++){
 				FreeTree(&((*a)->child[i]));
+				free((*a)->child[i]);
 			}
 		}
 		free((*a)->child);
@@ -257,9 +305,9 @@ void FreeTree(tree** a){
 	}	
 }
 
-float TextToFloat(const char* text)
+int TextToFloat(const char* text)
 {
-	float value = 0.0f;
+	int value = 0.0f;
 	float floatingPoint = 0.0f;
 	int sign = 1;
 
@@ -273,7 +321,7 @@ float TextToFloat(const char* text)
     // convert text to float
 	for (int i = 0; (((text[i] >= '0') && (text[i] <= '9')) || text[i] == '.'); i++)
 	{
-		if (text[i] == '.')
+		/*if (text[i] == '.')
 		{
 			if (floatingPoint > 0.0f) break;
 
@@ -285,14 +333,14 @@ float TextToFloat(const char* text)
 			value += (float)(text[i] - '0') / floatingPoint;
 			floatingPoint *= 10.0f;
 		}
-		else                      // before decimal separator
+		else */                  // before decimal separator
 			value = value * 10.0f + (float)(text[i] - '0');
 	}
 
 	return value * sign;
 }
 
-int GuiFloatBox(Rectangle bounds, const char* text, float* value, int minValue, int maxValue, bool editMode)
+int GuiFloatBox(Rectangle bounds, const char* text, int* value, int minValue, int maxValue, bool editMode)
 {
 #if !defined(RAYGUI_VALUEBOX_MAX_CHARS)
 #define RAYGUI_VALUEBOX_MAX_CHARS  32
@@ -319,12 +367,12 @@ int GuiFloatBox(Rectangle bounds, const char* text, float* value, int minValue, 
     {
         Vector2 mousePoint = GetMousePosition();
 
-        if (*value >= 0) sprintf(textValue, "+%.3f", *value);
-        else sprintf(textValue, "%.3f", *value);
+        if (*value >= 0) sprintf(textValue, "%d", *value);
+        else sprintf(textValue, "%d", *value);
 
         bool valueHasChanged = false;
 
-        int keyCount = (int)strlen(textValue) - guiFloatingPointIndex;
+        int keyCount = (int)strlen(textValue); //- guiFloatingPointIndex;
 
         if (editMode)
         {
@@ -336,10 +384,8 @@ int GuiFloatBox(Rectangle bounds, const char* text, float* value, int minValue, 
                 if (GetTextWidth(textValue) < bounds.width)
                 {
                     int key = GetCharPressed();
-                    if ((key >= 48) && (key <= 57) && guiFloatingPointIndex)
+                    if ((key >= 48) && (key <= 57))
                     {
-                        if (guiFloatingPointIndex && guiFloatingPointIndex != 4) guiFloatingPointIndex--;
-
                         textValue[keyCount] = (char)key;
                         textValue[++keyCount] = '\0';
                         valueHasChanged = true;
@@ -352,7 +398,6 @@ int GuiFloatBox(Rectangle bounds, const char* text, float* value, int minValue, 
             {
                 if (IsKeyPressed(KEY_BACKSPACE))
                 {
-                    if (guiFloatingPointIndex < 4) guiFloatingPointIndex++;
 
                     keyCount--;
                     textValue[keyCount] = '\0';
@@ -369,11 +414,11 @@ int GuiFloatBox(Rectangle bounds, const char* text, float* value, int minValue, 
             }
 
             // Add decimal separator
-            if ((IsKeyPressed(KEY_COMMA) || IsKeyPressed(KEY_PERIOD)) && guiFloatingPointIndex == 4)
+      /*      if ((IsKeyPressed(KEY_COMMA) || IsKeyPressed(KEY_PERIOD)) && guiFloatingPointIndex == 4)
             {
                 guiFloatingPointIndex--;
                 valueHasChanged = true;
-            }
+            }*/
 
             if (valueHasChanged)
             {
@@ -382,7 +427,7 @@ int GuiFloatBox(Rectangle bounds, const char* text, float* value, int minValue, 
 
             if (IsKeyPressed(KEY_ENTER) || (!CheckCollisionPointRec(mousePoint, bounds) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)))
             {
-                guiFloatingPointIndex = 0;
+                
                 result = 1;
             }
         }
@@ -403,12 +448,12 @@ int GuiFloatBox(Rectangle bounds, const char* text, float* value, int minValue, 
     // Draw control
     //--------------------------------------------------------------------
     Color baseColor = BLANK;
-    sprintf(textValue, "%.3f", *value);
+    sprintf(textValue, "%d", *value);
 
     if (state == STATE_PRESSED)
     {
         baseColor = GetColor(GuiGetStyle(VALUEBOX, BASE_COLOR_PRESSED));
-        textValue[(int)strlen(textValue) - guiFloatingPointIndex] = '\0';
+        textValue[(int)strlen(textValue)] = '\0';
     }
     else if (state == STATE_DISABLED) baseColor = GetColor(GuiGetStyle(VALUEBOX, BASE_COLOR_DISABLED));
 
