@@ -290,10 +290,10 @@ int main(){
 		if(IsKeyDown(KEY_DOWN)){
 			Camera.target.y+=15;
 		}		
-		if(IsKeyDown(KEY_LEFT_CONTROL)){
+		if(IsKeyDown(KEY_LEFT_CONTROL)&& Camera.zoom>0.01){
 			Camera.zoom-=0.02; 	
 		}
-		if(IsKeyDown(KEY_LEFT_SHIFT)&& Camera.zoom>0.01){
+		if(IsKeyDown(KEY_LEFT_SHIFT)){
 			Camera.zoom+=0.02;
 		}	
 	}
