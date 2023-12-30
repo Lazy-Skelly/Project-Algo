@@ -14,7 +14,6 @@ void DrawTree(tree* a,int x,int y,int l,int depth){
 
     if(a){
            
-        Drawnode(a->val,x,y,a->color);
         a->x=x;
         a->y=y;
         
@@ -23,29 +22,30 @@ void DrawTree(tree* a,int x,int y,int l,int depth){
 	    if(a->child){
          if (a->child[0]!= NULL && a->Nodes >= 1) {
        
-         DrawTree( a->child[0] ,x-3*(l/k)/2,y+300,l,depth+1);
          DrawLine( x-9 , y-9 , x-3*(l/k)/2 , y+300-9 , BLUE );
+         DrawTree( a->child[0] ,x-3*(l/k)/2,y+300,l,depth+1);
          }
         
          if (a->child[1] != NULL && a->Nodes >= 2) {
         
-         DrawTree(a->child[1],x-(l/k)/2,y+300,l,depth+1);
          DrawLine(x-9,y-9,x-(l/k)/2,y+300-9,BLUE);
+         DrawTree(a->child[1],x-(l/k)/2,y+300,l,depth+1);
          }
         
          
          if (a->child[2] != NULL && a->Nodes >= 3) {
         
-        DrawTree(a->child[2],x+(l/k)/2,y+300,l,depth+1);
         DrawLine(x+9,y-9,x+(l/k)/2,y+300-9,BLUE);
+        DrawTree(a->child[2],x+(l/k)/2,y+300,l,depth+1);
          }
          
          if (a->child[3] != NULL && a->Nodes >= 4) {
         
-        DrawTree(a->child[3],x+3*(l/k)/2,y+300,l,depth+1);
         DrawLine(x+9,y-9,x+3*(l/k)/2,y+300-9,BLUE);
+        DrawTree(a->child[3],x+3*(l/k)/2,y+300,l,depth+1);
          }
         
+        Drawnode(a->val,x,y,a->color);
      }
          
     } 
@@ -115,14 +115,18 @@ void insert2pos(tree** t,int val,tree** q){
     else insert2pos(&((*t)->child[p]),val,&*q);
 }
 
-bool research(tree* t,int x){
+bool research(tree* t,int x, tree** out){
 	if(t){
+    bool found = false;
     if(t->val==x){
+    	insert(out,(int)t,1);
+    	for(int i=0;i<t->Nodes;i++){
+        	found = research(t->child[i], x, out);
+        }
         return true;
     }else if(t->val!=x){
-    	bool found = false;
         for(int i=0;i<t->Nodes;i++){
-        	found = found || research(t->child[i], x);
+        	found = found || research(t->child[i], x, out);
         }
         return found;
     }
@@ -181,8 +185,25 @@ int PopMinimum(tree** t){
   return i;
 	}
   }
-  
-void Delete(tree** t,int x){
+ 
+ 
+void Delete(tree** t, int x){
+	tree* p =*t;
+	if(p){
+		if(p->val == x){
+			int last = lastNode(*t);
+			if(last == -1){
+				FreeTree(t);
+			}else{
+				p->val = PopMaximum(&(p->child[last]));
+			}
+		}else{
+			DeleteRec(t,x);	
+		}
+	}	
+}  
+
+void DeleteRec(tree** t,int x){
 	tree* p =*t;
 	if(p){
 		int last = lastNode(*t);
@@ -226,7 +247,7 @@ void Delete(tree** t,int x){
 				}
 			}else{
 				for(int i=0; i<=last;i++){
-					Delete(&(p->child[i]),x);
+					DeleteRec(&(p->child[i]),x);
 				}	
 			}
 		}		

@@ -5,75 +5,63 @@ const int screenWidth = 1080;
 const int screenHeight = 700;
 
 int main(){
-	
+//variables init used in program	
 	srand(time(0));
 	
 	tree* a = NULL;
-	tree* p = NULL;
-	int smth = 0;
-	int del =0;
-  	bool start=false;
-	double t0=0; 
-  bool new=false;
-  bool searching=false;
-  bool found = false;
-
-	insert(&a,1,4);
-	int l=GetDepth(a);
-	for(int i =0;i<5;i++){
-		insert(&a,RANDOM(1000),4);
+	tree* FoundTree = NULL;
+	tree* Inserted = NULL;
+	tree* DeleteTree = NULL;	
+ 	
+	bool ToChange,ToDelete, ToSearch, ToRandomize, HaveSearch, Settings, HaveInserted, HaveDeleted; 
+	ToChange = ToDelete = ToSearch = ToRandomize = HaveSearch = Settings = HaveInserted = HaveDeleted = false;
+	
+	int Changed, Deleted, Searched, LastDeleted, Randomized;
+	Changed = Deleted = Searched = Randomized = 0;
+	
+	double SearchTime, InsertedTime, DeletedTime; 
+	
+	int l, Nodes;
+	Nodes = 4;
+	
+//generating random tree with quad children	
+	for(int i =0;i<6;i++){
+		insert(&a,RANDOM(i*20),Nodes);
 	}
-	insert(&a,5000,4);
-	Camera2D cd;
-	cd.offset.x=540;
-    cd.offset.y=350;
+
+//camera init	
+	Camera2D Camera;
+	Camera.offset.x=540;
+    Camera.offset.y=350;
     
-    cd.target.x=540;
-    cd.target.y=350;
+    Camera.target.x=540;
+    Camera.target.y=350;
     
-    cd.rotation=0;
-    cd.zoom=1; 
+    Camera.rotation=0;
+    Camera.zoom=1; 
     
-	Camera2D camera;
-	camera.offset.x=0;
-    camera.offset.y=0;
-    
-    camera.target.x=0;
-    camera.target.y=0;
-    
-    camera.rotation=0;
-    camera.zoom=1; 
+	Camera2D UICamera = Camera;
+ 
 	
     InitWindow(screenWidth, screenHeight, "Arbre n-aire ");
     SetTargetFPS(60);
 	
-	Rectangle panelRec = { 20, 40, 200, 150 };
-    Rectangle panelContentRec = {0, 0, 340, 340 };
-    Rectangle panelView = { 0 };
-    Vector2 panelScroll = { 99, -20 };
-
-    bool showContentArea = true;
-	bool change = false;
-	bool D = false;
 
 
-nitAudioDevice();        
+//sound init
+	InitAudioDevice();        
 
-     Music music = LoadMusicStream("correct-choice.mp3");
-     Music musicc = LoadMusicStream("click-button.mp3");
-     Music music2 = LoadMusicStream("playerno.mp3");
+    Sound ClickSound = LoadSound("click-button.mp3");
+    Sound NotFoundSound = LoadSound("playerno.mp3");	
+	Sound CorrectSound = LoadSound("correct-choice.mp3");
+	Sound DestroySound = LoadSound("destroy.mp3");
 	
-
     while (!WindowShouldClose()) {
 
-           l=GetDepth(a);
-         UpdateMusicStream(music);
-         UpdateMusicStream(musicc);
-         UpdateMusicStream(music2);
 
 	    
         BeginDrawing();
-        BeginMode2D(cd);
+        BeginMode2D(Camera);
         
         ClearBackground(BRITISH);
         
@@ -82,122 +70,237 @@ nitAudioDevice();
         // l=4:  2^(4-2)= 4*screenWidth space needed
         // l=3:  2^(3-2)= 2*screenWidth space needed
         // etc...
-       
-        if(!new && !searching){
-            DrawText("PRESS SPACE TO INSERT A VALUE",0,-100,50,GOLD);           
-            DrawText("PRESS TAB TO SEARCH A VALUE",0,-180,50,GOLD);
-        }    
-           
-       
-        if(IsKeyReleased(32)&& !searching){
-            
-          printf("\ndonner la valeur\n");
-          scanf("%d",&n);
-          insert2pos(&a,n,&p);   
-        //  p=insert(&a,n,4);
-          t0=GetTime();   
-          PlayMusicStream(musicc);          
-          new=true;           
-        }
-   
-       if(new) {
-           DrawTree(a,screenWidth/2,50,pow(2,l-2)*screenWidth,1);
-           Drawnode(p->val,p->x,p->y,RED); 
-           
-      
-           }
-       else
-            DrawTree(a,screenWidth/2,50,pow(2,l-2)*screenWidth,1);
-     
-        
-          
-         if(GetTime()-t0>0.05 && t0!=0) {
-             StopMusicStream(musicc);
-         if(GetTime()-t0>0.5 && t0!=0) new=false;
-         
-         
-        
-          } 
-         
-        
-        
-        
-        
-        
-        if(IsKeyReleased(258) && !new){
-             printf("\ndonner la valeur à rechercher\n");
-          
-          scanf("%d",&n);
-            searching =true;
-            t0=GetTime();
-         }
-       
-        if(searching){
-         
-         if(research(a,n,&p)){ 
-         
-         Drawnode(p->val,p->x,p->y,GREEN);
-         DrawText("FOUND",-150,-50,50,GREEN);
-         
-         PlayMusicStream(music);
-         } 
-               
-         else{ DrawText("NOT FOUND",-150,-50,50,RED);
-         
-         PlayMusicStream(music2);} 
-         
-        }
-        
-          if(GetTime()-t0>0.5){
-            if(GetMusicTimePlayed(music)>0.4) StopMusicStream(music);
-            if(GetMusicTimePlayed(music2)>0.4) StopMusicStream(music2);
-            searching=false;
-            }
-	    
-//        GuiFloatBox((Rectangle){ (10+cd.target.x-cd.offset.x)*cd.zoom, (100+cd.target.y-cd.offset.y)*cd.zoom, 200*1/cd.zoom, 50*1/cd.zoom }, NULL, &smth, -1000000.0, 1000000.0, true);
- //       GuiButton((Rectangle){20,50,100,100},"hallo");
-		
-        //camera commands
-          if(IsKeyDown(KEY_LEFT_CONTROL)) cd.zoom+=0.02;
-          if(IsKeyDown(KEY_LEFT_SHIFT)&& cd.zoom>0.01) cd.zoom-=0.02; 
-          if(IsKeyDown(262)) cd.target.x+=15;
-          if(IsKeyDown(263)) cd.target.x-=15;
-          if(IsKeyDown(264)) cd.target.y+=15;
-          if(IsKeyDown(265)) cd.target.y-=15;
-		  
-		  if(IsKeyReleased(32)){
-//			FreeTree(&(a->child[0]));		  
-		  }
-		     
- //       EndDrawing();  
-        
-		BeginMode2D(camera);
-		GuiWindowBox((Rectangle){0, 0, screenWidth/5, screenHeight }, "#142# SETTINGS");
-		
-		if(GuiFloatBox((Rectangle){ 10, 100, 200, 50 }, NULL, &smth, -1000000.0, 1000000.0, change)){
-			change = !change;
-			if(IsKeyDown(KEY_ENTER)){				
-				insert(&a,smth,4);
-			}
+    
+	//drawing the tree on its own layer       
+        l=GetDepth(a)-1;
+        DrawTree(a,screenWidth/2,50,pow(2,l-2)*screenWidth,1);
+
+    //strating ui layer
+		BeginMode2D(UICamera);
+	
+	if(Settings){
+		if(GuiWindowBox((Rectangle){0, 0, screenWidth/5, screenHeight }, "#142# SETTINGS")){
+			Settings = false;
+			PlaySound(ClickSound);
 		}
 		
-		if(GuiFloatBox((Rectangle){ 10, 220, 200, 50 }, NULL, &del, -1000000.0, 1000000.0, D)){
-			D = !D;
-			if(IsKeyDown(KEY_ENTER)){				
-				Delete(&a,del);
-				printf("%d\n",lastNode(a));
-			}
-		}
-		
-		DrawText("Clear Tree",70,175,20,BLACK);                    
-		if(GuiButton((Rectangle){10,160,50,50},"")){
+		//clearinf tree
+		DrawText("Clear Tree",70,40,20,BLACK);                    
+		if(GuiButton((Rectangle){10,30,40,40},"#143#")){
 			FreeTree(&a);
+			PlaySound(ClickSound);
 		}
 		
+		//adding element ui with sounds and colors
+		DrawText("Add Element",10,80,20,BLACK);
+		if(GuiFloatBox((Rectangle){ 10, 100, 200, 30 }, NULL, &Changed, -1000000.0, 1000000.0, ToChange)){
+			ToChange = !ToChange;
+			if(ToChange){
+				Changed =0;
+			}
+			if(IsKeyDown(KEY_ENTER) || (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && !ToChange)){
+				if(Inserted){
+					Inserted->color = BLUE;
+				}
+				HaveInserted = true;
+				InsertedTime = GetTime();				
+				Inserted = insert(&a,Changed,Nodes);
+				Inserted->color = GOLD;
+				PlaySound(ClickSound);
+			}
+		}
+		if(HaveInserted){
+			if(GetTime()-InsertedTime >2){
+				HaveInserted = false;
+				Inserted->color = BLUE;
+				Inserted = NULL;
+			}
+		}
+			
+		//deleting element ui with sounds and colors
+		DrawText("Delete Element",10,140,20,BLACK);
+		if(GuiFloatBox((Rectangle){ 10, 160, 200, 30 }, NULL, &Deleted, -1000000.0, 1000000.0, ToDelete)){
+			ToDelete = !ToDelete;
+			if(ToDelete){
+				Deleted =0;
+			}
+			if(IsKeyDown(KEY_ENTER) || (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && !ToDelete)){
+				if(DeleteTree){
+					((tree*)DeleteTree->val)->color = BLUE;
+					Delete(&a,LastDeleted);
+					FreeTree(&DeleteTree);	
+					PlaySound(DestroySound);
+				}
+				if(research(a,Deleted,&DeleteTree)){
+					((tree*)DeleteTree->val)->color = RED;
+					HaveDeleted = true;
+					LastDeleted = Deleted;
+					DeletedTime = GetTime();
+				}								
+			}
+		}
+		if(HaveDeleted){
+			if(GetTime()-DeletedTime > 2){
+				HaveDeleted = false;
+				((tree*)DeleteTree->val)->color = BLUE;
+				Delete(&a,LastDeleted);				
+				FreeTree(&DeleteTree);
+				PlaySound(DestroySound);
+			}	
+		}
+		
+		//TO DO OR DISCUSS
+		//ADD MULTI-DELETE
+/*		DrawText("Delete multi-Element",10,140,20,BLACK);
+		if(GuiFloatBox((Rectangle){ 10, 160, 200, 30 }, NULL, &Deleted, -1000000.0, 1000000.0, ToDelete)){
+			ToDelete = !ToDelete;
+			if(ToDelete){
+				Deleted =0;
+			}
+			if(IsKeyDown(KEY_ENTER) || (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && !ToDelete)){				
+				Delete(&a,Deleted);
+			}
+		}*/
+		
+		//searching element ui with sounds and colors
+		DrawText("Search Element",10,200,20,BLACK);
+		if(GuiFloatBox((Rectangle){ 10, 220, 200, 30 }, NULL, &Searched, -1000000.0, 1000000.0, ToSearch)){
+			ToSearch = !ToSearch;
+			if(ToSearch){
+				Searched = 0;	
+			}
+			if(IsKeyDown(KEY_ENTER) || (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && !ToSearch)){
+				HaveSearch = true;
+				SearchTime = GetTime();
+				tree* temp = FoundTree;
+				while(temp){
+					((tree*)temp->val)->color = BLUE;
+					temp = temp->child[0];  
+				}
+				FreeTree(&FoundTree);				
+				if(research(a,Searched,&FoundTree)){
+					PlaySound(CorrectSound);
+					temp = FoundTree;
+					while(temp){
+						((tree*)temp->val)->color = GREEN;
+						temp = temp->child[0];  
+					}
+				}else{
+					PlaySound(NotFoundSound);
+				}
+				
+			}
+		}
+		if(HaveSearch){
+			tree* temp = FoundTree;
+			if(GetTime() - SearchTime< 2){
+				if(FoundTree){
+					int times =0;
+					while(temp){
+						times++;
+						temp = temp->child[0];  
+					}			
+					DrawText(TextFormat("Found: %d time",times),10,250,20,RED);
+				}else{
+					DrawText(TextFormat("Value Not Found!"),10,250,20,RED);
+				}
+			}else{
+				HaveSearch = false;
+				while(temp){
+					((tree*)temp->val)->color = BLUE;
+					temp = temp->child[0];  
+				}
+				FreeTree(&FoundTree);
+			}
+		}
+		
+		//number of random element made into a new tree
+		DrawText("Randomize Tree",10,280,20,BLACK);
+		if(GuiFloatBox((Rectangle){ 10, 300, 200, 30 }, NULL, &Randomized, -1000000.0, 1000000.0, ToRandomize)){
+			ToRandomize = !ToRandomize;
+			if(ToRandomize){
+				Randomized = 0;	
+			}
+			if(IsKeyDown(KEY_ENTER) || (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && !ToRandomize)){
+				FreeTree(&a);
+				for(int i = 0; i < Randomized;i++){
+					insert(&a,RANDOM(i*20),Nodes);
+				}				
+			}
+		}
+		
+		//number of child regulator
+		DrawText("Number of Nodes",20,530,20,BLACK);
+		DrawText(TextFormat("%d",Nodes),97,550,30,BLACK);
+		if(GuiButton((Rectangle){20,550,30,30},"#130#") && Nodes > 2){
+			Nodes--;
+			PlaySound(ClickSound);
+		}		
+		if(GuiButton((Rectangle){160,550,30,30},"#131#") && Nodes < 4){
+			Nodes++;
+			PlaySound(ClickSound);
+		}		
+		
+		//camera commands
+		if(GuiButton((Rectangle){90,590,30,30},"#117#") || IsKeyDown(KEY_UP)){
+			Camera.target.y-=15;
+			PlaySound(ClickSound);
+		}
+		if(GuiButton((Rectangle){60,620,30,30},"#114#") || IsKeyDown(KEY_LEFT)){
+			Camera.target.x-=15;
+			PlaySound(ClickSound);
+		}
+		if(GuiButton((Rectangle){120,620,30,30},"#115#") || IsKeyDown(KEY_RIGHT)){
+			Camera.target.x+=15;
+			PlaySound(ClickSound);
+		}
+		if(GuiButton((Rectangle){90,650,30,30},"#116#") || IsKeyDown(KEY_DOWN)){
+			Camera.target.y+=15;
+			PlaySound(ClickSound);
+		}
+		if(GuiButton((Rectangle){90,620,30,30},"#57#")){
+			Camera = UICamera;
+			PlaySound(ClickSound);
+		}
+		//zoom
+		if(GuiButton((Rectangle){160,620,30,30},"#42#") || IsKeyDown(KEY_LEFT_CONTROL)){
+			Camera.zoom-=0.02; 
+			PlaySound(ClickSound);	
+		}
+		if(GuiButton((Rectangle){20,620,30,30},"#43#") || IsKeyDown(KEY_LEFT_SHIFT)&& Camera.zoom>0.01){
+			Camera.zoom+=0.02;
+			PlaySound(ClickSound);
+		}
+		
+    }else{
+    	//camera commands if settings are collapsed
+    	if(GuiButton((Rectangle){10,10,30,30},"#142#")){
+			Settings = true;
+			PlaySound(ClickSound);
+		}		
+		if(IsKeyDown(KEY_UP)){
+			Camera.target.y-=15;
+		}
+		if(IsKeyDown(KEY_LEFT)){
+			Camera.target.x-=15;
+		}
+		if(IsKeyDown(KEY_RIGHT)){
+			Camera.target.x+=15;
+		}
+		if(IsKeyDown(KEY_DOWN)){
+			Camera.target.y+=15;
+		}		
+		if(IsKeyDown(KEY_LEFT_CONTROL)){
+			Camera.zoom-=0.02; 	
+		}
+		if(IsKeyDown(KEY_LEFT_SHIFT)&& Camera.zoom>0.01){
+			Camera.zoom+=0.02;
+		}	
+	}
        	EndMode2D();
-		EndDrawing();
-    }
-	  
+		EndDrawing();		
+	}
+	
     CloseWindow();
     
 	

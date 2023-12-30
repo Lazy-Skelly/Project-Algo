@@ -34,7 +34,7 @@ tree* newnode(int x, int Nodes);
  
 tree* insert(tree** t,int x, int Nodes);
 
-bool research(tree* t,int x);
+bool research(tree* t,int x,tree** out);
 
 int PopMaximum(tree** t);
 
@@ -44,8 +44,12 @@ int lastNode(tree* t);
 
 void Delete(tree** t,int x);
 
+void DeleteRec(tree** t,int x);
+
 int GetDepth(tree* a);
 
 void FreeTree(tree** a);
 
 int GuiFloatBox(Rectangle bounds, const char* text, int* value, int minValue, int maxValue, bool editMode);
+
+
