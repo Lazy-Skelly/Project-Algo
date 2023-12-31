@@ -40,6 +40,10 @@ int PopMaximum(tree** t);
 
 int PopMinimum(tree** t);
 
+tree* GetMaximum(tree* t);
+
+tree* GetMinimum(tree* t);
+
 int lastNode(tree* t);
 
 void Delete(tree** t,int x);

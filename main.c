@@ -12,14 +12,17 @@ int main(){
 	tree* FoundTree = NULL;
 	tree* Inserted = NULL;
 	tree* DeleteTree = NULL;	
+	tree* MultiDeleteTree = NULL;
+	tree* Min, *Max;	
+ 	Min = Max = NULL;
  	
-	bool ToChange,ToDelete, ToSearch, ToRandomize, HaveSearch, Settings, HaveInserted, HaveDeleted; 
-	ToChange = ToDelete = ToSearch = ToRandomize = HaveSearch = Settings = HaveInserted = HaveDeleted = false;
+	bool ToChange,ToDelete, ToSearch, ToMultiDelete, ToRandomize, HaveSearch, Settings, HaveInserted, HaveDeleted, HaveMultiDeleted; 
+	ToChange = ToDelete = ToMultiDelete = ToSearch = ToRandomize = HaveSearch = Settings = HaveInserted = HaveDeleted = HaveMultiDeleted = false;
 	
-	int Changed, Deleted, Searched, LastDeleted, Randomized;
-	Changed = Deleted = Searched = Randomized = 0;
+	int Changed, Deleted, Searched, LastDeleted, Randomized, MultiDeleted, LastMultiDeleted;
+	Changed = Deleted = Searched = Randomized = MultiDeleted = 0;
 	
-	double SearchTime, InsertedTime, DeletedTime; 
+	double SearchTime, InsertedTime, DeletedTime, MultiDeletedTime, MaxTime, MinTime; 
 	
 	int l, Nodes;
 	Nodes = 4;
@@ -42,6 +45,7 @@ int main(){
     
 	Camera2D UICamera = Camera;
  
+	Vector2 Mouse;
 	
     InitWindow(screenWidth, screenHeight, "Arbre n-aire ");
     SetTargetFPS(60);
@@ -72,13 +76,20 @@ int main(){
         // etc...
     
 	//drawing the tree on its own layer       
-        l=GetDepth(a)-1;
+        l=GetDepth(a);
         DrawTree(a,screenWidth/2,50,pow(2,l-2)*screenWidth,1);
 
     //strating ui layer
 		BeginMode2D(UICamera);
 	
 	if(Settings){
+		if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
+			if(!CheckCollisionPointRec(GetMousePosition(),(Rectangle){0, 0, screenWidth/5, screenHeight })){
+				Settings = false;
+				Mouse = GetMousePosition();
+				PlaySound(ClickSound);	
+			}
+		}
 		if(GuiWindowBox((Rectangle){0, 0, screenWidth/5, screenHeight }, "#142# SETTINGS")){
 			Settings = false;
 			PlaySound(ClickSound);
@@ -135,7 +146,9 @@ int main(){
 					((tree*)DeleteTree->val)->color = RED;
 					HaveDeleted = true;
 					LastDeleted = Deleted;
-					DeletedTime = GetTime();
+					DeletedTime = GetTime();	
+				}else{
+					PlaySound(NotFoundSound);
 				}								
 			}
 		}
@@ -149,22 +162,51 @@ int main(){
 			}	
 		}
 		
-		//TO DO OR DISCUSS
-		//ADD MULTI-DELETE
-/*		DrawText("Delete multi-Element",10,140,20,BLACK);
-		if(GuiFloatBox((Rectangle){ 10, 160, 200, 30 }, NULL, &Deleted, -1000000.0, 1000000.0, ToDelete)){
-			ToDelete = !ToDelete;
-			if(ToDelete){
-				Deleted =0;
+		DrawText("Multi-Delete",10,200,20,BLACK);
+		if(GuiFloatBox((Rectangle){ 10, 220, 200, 30 }, NULL, &MultiDeleted, -1000000.0, 1000000.0, ToMultiDelete)){
+			ToMultiDelete = !ToMultiDelete;
+			if(ToMultiDelete){
+				MultiDeleted =0;
 			}
-			if(IsKeyDown(KEY_ENTER) || (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && !ToDelete)){				
-				Delete(&a,Deleted);
+			if(IsKeyDown(KEY_ENTER) || (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && !ToMultiDelete)){
+				tree* temp = MultiDeleteTree;
+				while(temp){
+					((tree*)temp->val)->color = BLUE;
+					Delete(&a,LastMultiDeleted);
+					temp = temp->child[0];
+				}
+				FreeTree(&MultiDeleteTree);	
+				if(research(a,MultiDeleted,&MultiDeleteTree)){
+					temp = MultiDeleteTree;
+					while(temp){
+						((tree*)temp->val)->color = RED;
+						temp = temp->child[0];
+					}
+					HaveMultiDeleted = true;
+					LastMultiDeleted = MultiDeleted;
+					MultiDeletedTime = GetTime();				
+				}else{
+					PlaySound(NotFoundSound);
+				}								
 			}
-		}*/
+		}
+		if(HaveMultiDeleted){
+			if(GetTime()-MultiDeletedTime > 2){
+				HaveMultiDeleted = false;
+				tree* temp = MultiDeleteTree;
+				while(temp){
+					((tree*)temp->val)->color = BLUE;
+					Delete(&a,LastMultiDeleted);
+					temp = temp->child[0];
+				}
+				FreeTree(&MultiDeleteTree);	
+				PlaySound(DestroySound);
+			}	
+		}
 		
 		//searching element ui with sounds and colors
-		DrawText("Search Element",10,200,20,BLACK);
-		if(GuiFloatBox((Rectangle){ 10, 220, 200, 30 }, NULL, &Searched, -1000000.0, 1000000.0, ToSearch)){
+		DrawText("Search Element",10,260,20,BLACK);
+		if(GuiFloatBox((Rectangle){ 10, 280, 200, 30 }, NULL, &Searched, -1000000.0, 1000000.0, ToSearch)){
 			ToSearch = !ToSearch;
 			if(ToSearch){
 				Searched = 0;	
@@ -200,9 +242,9 @@ int main(){
 						times++;
 						temp = temp->child[0];  
 					}			
-					DrawText(TextFormat("Found: %d time",times),10,250,20,RED);
+					DrawText(TextFormat("Found: %d time",times),10,310,20,RED);
 				}else{
-					DrawText(TextFormat("Value Not Found!"),10,250,20,RED);
+					DrawText(TextFormat("Value Not Found!"),10,310,20,RED);
 				}
 			}else{
 				HaveSearch = false;
@@ -215,8 +257,8 @@ int main(){
 		}
 		
 		//number of random element made into a new tree
-		DrawText("Randomize Tree",10,280,20,BLACK);
-		if(GuiFloatBox((Rectangle){ 10, 300, 200, 30 }, NULL, &Randomized, -1000000.0, 1000000.0, ToRandomize)){
+		DrawText("Randomize Tree",10,330,20,BLACK);
+		if(GuiFloatBox((Rectangle){ 10, 350, 200, 30 }, NULL, &Randomized, -1000000.0, 1000000.0, ToRandomize)){
 			ToRandomize = !ToRandomize;
 			if(ToRandomize){
 				Randomized = 0;	
@@ -224,37 +266,77 @@ int main(){
 			if(IsKeyDown(KEY_ENTER) || (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && !ToRandomize)){
 				FreeTree(&a);
 				for(int i = 0; i < Randomized;i++){
-					insert(&a,RANDOM(i*20),Nodes);
+					insert(&a,RANDOM(i*20+10),Nodes);
 				}				
 			}
 		}
+		 //Min and Max buttons                  
+		if(GuiButton((Rectangle){10,390,40,40},"Max")){
+			Max = GetMaximum(a);
+			MaxTime = GetTime();
+			if(Max){
+				Max->color = GREEN;
+				PlaySound(CorrectSound);
+			}else{
+				PlaySound(NotFoundSound);
+			}
+		}		
+		if(Max){
+			if(GetTime()-MaxTime<2){	
+				DrawText(TextFormat("%d",Max->val),70,400,20,BLACK);                    
+			}else{
+				Max->color = BLUE;
+				Max = NULL;
+			}
+		}
+		
+		if(GuiButton((Rectangle){10,440,40,40},"Min")){
+			Min = GetMinimum(a);
+			MinTime = GetTime();
+			PlaySound(ClickSound);
+			if(Min){
+				Min->color = GREEN;
+				PlaySound(CorrectSound);
+			}else{
+				PlaySound(NotFoundSound);
+			}
+		}
+		if(Min){
+			if(GetTime()-MinTime<2){	
+				DrawText(TextFormat("%d",Min->val),70,450,20,BLACK);                    
+			}else{
+				Min->color = BLUE;
+				Min = NULL;
+			}
+		}
+		
 		
 		//number of child regulator
 		DrawText("Number of Nodes",20,530,20,BLACK);
 		DrawText(TextFormat("%d",Nodes),97,550,30,BLACK);
-		if(GuiButton((Rectangle){20,550,30,30},"#130#") && Nodes > 2){
+		if(GuiButton((Rectangle){20,550,30,30},"#130#") && Nodes > 1){
 			Nodes--;
 			PlaySound(ClickSound);
 		}		
-		if(GuiButton((Rectangle){160,550,30,30},"#131#") && Nodes < 4){
+		if(GuiButton((Rectangle){160,550,30,30},"#131#") && Nodes < 100){
 			Nodes++;
 			PlaySound(ClickSound);
 		}		
 		
 		//camera commands
-		if(GuiButton((Rectangle){90,590,30,30},"#117#") || IsKeyDown(KEY_UP)){
+		if(GuiButton((Rectangle){90,590,30,30},"#117#")){
 			Camera.target.y-=15;
 			PlaySound(ClickSound);
 		}
-		if(GuiButton((Rectangle){60,620,30,30},"#114#") || IsKeyDown(KEY_LEFT)){
+		if(GuiButton((Rectangle){60,620,30,30},"#114#")){
 			Camera.target.x-=15;
 			PlaySound(ClickSound);
 		}
-		if(GuiButton((Rectangle){120,620,30,30},"#115#") || IsKeyDown(KEY_RIGHT)){
+		if(GuiButton((Rectangle){120,620,30,30},"#115#")){
 			Camera.target.x+=15;
 			PlaySound(ClickSound);
 		}
-		if(GuiButton((Rectangle){90,650,30,30},"#116#") || IsKeyDown(KEY_DOWN)){
+		if(GuiButton((Rectangle){90,650,30,30},"#116#")){
 			Camera.target.y+=15;
 			PlaySound(ClickSound);
 		}
@@ -263,11 +345,11 @@ int main(){
 			PlaySound(ClickSound);
 		}
 		//zoom
-		if(GuiButton((Rectangle){160,620,30,30},"#42#") || IsKeyDown(KEY_LEFT_CONTROL)){
+		if(GuiButton((Rectangle){160,620,30,30},"#42#")){
 			Camera.zoom-=0.02; 
 			PlaySound(ClickSound);	
 		}
-		if(GuiButton((Rectangle){20,620,30,30},"#43#") || IsKeyDown(KEY_LEFT_SHIFT)&& Camera.zoom>0.01){
+		if(GuiButton((Rectangle){20,620,30,30},"#43#")){
 			Camera.zoom+=0.02;
 			PlaySound(ClickSound);
 		}
@@ -277,7 +359,19 @@ int main(){
     	if(GuiButton((Rectangle){10,10,30,30},"#142#")){
 			Settings = true;
 			PlaySound(ClickSound);
-		}		
+		}
+		
+		if(IsMouseButtonDown(MOUSE_BUTTON_LEFT)){
+			Vector2 Now = GetMousePosition();
+			Camera.target.x -= Now.x - Mouse.x;
+			Camera.target.y -= Now.y - Mouse.y;
+			Mouse = Now;		
+		}else{
+			Mouse = GetMousePosition();
+		}
+		
+		Camera.zoom+=GetMouseWheelMove()*.02;
+	}
 		if(IsKeyDown(KEY_UP)){
 			Camera.target.y-=15;
 		}
@@ -290,13 +384,16 @@ int main(){
 		if(IsKeyDown(KEY_DOWN)){
 			Camera.target.y+=15;
 		}		
-		if(IsKeyDown(KEY_LEFT_CONTROL)&& Camera.zoom>0.01){
+		if(IsKeyDown(KEY_LEFT_CONTROL)){
 			Camera.zoom-=0.02; 	
 		}
 		if(IsKeyDown(KEY_LEFT_SHIFT)){
 			Camera.zoom+=0.02;
-		}	
-	}
+		}
+		if(Camera.zoom <0.01){
+			Camera.zoom = 0.01;
+		} 	
+		
        	EndMode2D();
 		EndDrawing();		
 	}

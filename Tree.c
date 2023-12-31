@@ -9,59 +9,19 @@ void Drawnode(int val,int posx,int posy,Color c){
         DrawCircle(posx,posy,20,c);
         DrawText(TextFormat("%d",val),posx-6,posy-6,15,WHITE);
 }
-/*old version
-void DrawTree(tree* a,int x,int y,int l,int depth){ 
 
-    if(a){
-           
-        a->x=x;
-        a->y=y;
-        
-         int k = pow(a->Nodes,depth)-1;
-        
-	    if(a->child){
-         if (a->child[0]!= NULL && a->Nodes >= 1) {
-       
-         DrawLine( x-9 , y-9 , x-3*(l/k)/2 , y+300-9 , BLUE );
-         DrawTree( a->child[0] ,x-3*(l/k)/2,y+300,l,depth+1);
-         }
-        
-         if (a->child[1] != NULL && a->Nodes >= 2) {
-        
-         DrawLine(x-9,y-9,x-(l/k)/2,y+300-9,BLUE);
-         DrawTree(a->child[1],x-(l/k)/2,y+300,l,depth+1);
-         }
-        
-         
-         if (a->child[2] != NULL && a->Nodes >= 3) {
-        
-        DrawLine(x+9,y-9,x+(l/k)/2,y+300-9,BLUE);
-        DrawTree(a->child[2],x+(l/k)/2,y+300,l,depth+1);
-         }
-         
-         if (a->child[3] != NULL && a->Nodes >= 4) {
-        
-        DrawLine(x+9,y-9,x+3*(l/k)/2,y+300-9,BLUE);
-        DrawTree(a->child[3],x+3*(l/k)/2,y+300,l,depth+1);
-         }
-        
-        Drawnode(a->val,x,y,a->color);
-     }
-         
-    } 
- }
-*/
 void DrawTree(tree* a,int x,int y,int l,int depth){ 
 
     
-        if(a!=NULL){
+    if(a!=NULL){
            
-        Drawnode(a->val,x,y,BLUE);
         a->x=x;
         a->y=y;
         
          int k = pow(a->Nodes,depth)-1;
-      
+      	if(k == 0){
+      		k = 1;
+		  }
          int h;
          
          if(a->Nodes>0)h=a->Nodes-1;
@@ -71,17 +31,14 @@ void DrawTree(tree* a,int x,int y,int l,int depth){
                
          if (a->child[i]!=NULL) {
              
-         DrawTree( a->child[i] , x+(2*i-h)*(l/k)/2 , y+300 , l , depth+1);
          DrawLine( x , y-9 , x+(2*i-h)*(l/k)/2 , y+300-9 , BLUE );
+         DrawTree( a->child[i] , x+(2*i-h)*(l/k)/2 , y+300 , l , depth+1);
             
           }    
         }
-     } 
- }
-
-
-
-
+        Drawnode(a->val,x,y,a->color);
+    } 
+}
 
 tree* newnode(int x, int Nodes){
     tree* t;
@@ -203,6 +160,36 @@ int PopMinimum(tree** t){
 	}
 }
 
+tree* GetMaximum(tree* t){
+	if(t){
+		int last = lastNode(t);
+		int val;
+		val = t->val;
+		if(last != -1){
+			if(t->child[last]->val > t->val){
+				return GetMaximum(t->child[last]);
+			}
+		}	
+		return t;	
+	}
+	return NULL;
+}
+
+tree* GetMinimum(tree* t){
+	if(t){
+		int last = lastNode(t);
+		int val;
+		val = t->val;
+		if(last != -1){
+			if(t->child[0]->val < t->val){
+				return GetMinimum(t->child[0]);
+			}
+		}
+		return t;
+	}
+	return NULL;
+}
+
  int lastNode(tree* t){
  	if(t){
    int i=0;
@@ -284,41 +271,7 @@ void DeleteRec(tree** t,int x){
 		}		
 	}
 }  
-/*
-void Delete(tree** t,int x){
-    tree* p=*t;
-    int i;
-    int j=0;
-	if(p){
-	
-   	if(p->val==x){
-              
-       	if(p->child[0] != NULL){
-       		while(lastNode(p)!=-1){
-       			p->val=p->child[lastNode(p)]->val;
-       			p=p->child[lastNode(p)];
-       		}
-        	//free(p);
-       	}else{
-           	if(lastNode(p)>1){
-               	while(p->child[j]!=p){
-                   j++;
-               	}
-          		while(j<lastNode(p)){
-            		p->child[j]= p->child[j+1];
-            	    j++;
-           		}
-         		//free(q->child[j]);
-       		}
-       }
-    }else{
-        for( i=0;i<(*t)->Nodes;i++){           
-            Delete(&((*t)->child[i]), x);
-        }
-    }
-   	}
- }
-*/
+
 int GetDepth(tree* a){
 	int Depth =0;
 	if(a != NULL){
