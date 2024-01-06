@@ -10,7 +10,7 @@ void Drawnode(int val,int posx,int posy,Color c){
         DrawText(TextFormat("%d",val),posx-6,posy-6,15,WHITE);
 }
 
-void DrawTree(tree* a,int x,int y,int l,int depth){ 
+/*void DrawTree(tree* a,int x,int y,int l,int depth){ 
 
     
     if(a!=NULL){
@@ -38,7 +38,36 @@ void DrawTree(tree* a,int x,int y,int l,int depth){
         }
         Drawnode(a->val,x,y,a->color);
     } 
-}
+}*/
+void DrawTree(tree* a,int x,int y,int l,int depth,Color c){ 
+
+    
+        if(a!=NULL){
+           
+        Drawnode(a->val,x,y,c);
+        a->x=x;
+        a->y=y;
+        
+         int k = pow(a->Nodes,depth)-1;
+      
+         int h;
+         
+         if(a->Nodes>0)h=a->Nodes-1;
+         else h=0;
+        
+        for(int i=0;i<a->Nodes;i++){
+               
+         if (a->child[i]!=NULL) {
+             
+         DrawTree( a->child[i] , x+(2*i-h)*(l/k)/2 , y+300 , l , depth+1,c);
+         DrawLine( x , y-9 , x+(2*i-h)*(l/k)/2 , y+300-9 ,c  );
+            
+          }    
+        }
+     } 
+ }
+
+
 
 tree* newnode(int x, int Nodes){
     tree* t;
