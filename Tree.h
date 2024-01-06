@@ -11,6 +11,7 @@
 
 #define MAKE(x,y) (x*)malloc(y * sizeof(x)) 
 #define BRITISH CLITERAL(Color){0,66,37,255}
+#define REDDO CLITERAL(Color){100,4,8,255}
 #define MAX 4
 #define RANDOM(x) rand() % (x+1)
 
