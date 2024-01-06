@@ -6,7 +6,21 @@ const int screenHeight = 700;
 
 int main(){
 //variables init used in program	
-	srand(time(0));
+ 	srand(time(0));
+
+	 Color ca[9];
+         ca[0]=BLUE;
+         ca[1]=DARKGREEN;
+         ca[2]=PINK;
+         ca[3]=GRAY;
+         ca[4]=BLACK;
+         ca[5]=GOLD;
+         ca[6]=REDDO;
+         ca[7]=DARKPURPLE;
+         ca[8]=ORANGE;
+     
+
+ 	
 	
 	tree* a = NULL;
 	tree* FoundTree = NULL;
