@@ -85,16 +85,16 @@ int main(){
         ClearBackground(BRITISH);
 
 
-       if(IsKeyReleased(48)) c=carray[0];
-       if(IsKeyReleased(49)) c=carray[1];
-       if(IsKeyReleased(50)) c=carray[2];
-       if(IsKeyReleased(51)) c=carray[3];
-       if(IsKeyReleased(52)) c=carray[4];
-       if(IsKeyReleased(53)) c=carray[5];
-       if(IsKeyReleased(54)) c=carray[6];
-       if(IsKeyReleased(55)) c=carray[7];
-       if(IsKeyReleased(56)) c=carray[8];
-       if(IsKeyReleased(57)) c=carray[9];	
+       if(IsKeyReleased(48)) a->color=carray[0];
+       if(IsKeyReleased(49)) a->color=carray[1];
+       if(IsKeyReleased(50)) a->color=carray[2];
+       if(IsKeyReleased(51)) a->color=carray[3];
+       if(IsKeyReleased(52)) a->color=carray[4];
+       if(IsKeyReleased(53)) a->color=carray[5];
+       if(IsKeyReleased(54)) a->color=carray[6];
+       if(IsKeyReleased(55)) a->color=carray[7];
+       if(IsKeyReleased(56)) a->color=carray[8];
+       if(IsKeyReleased(57)) a->color=carray[9];	
         // l=5:  2^(5-2)= 8*screenWidth space needed
         // l=4:  2^(4-2)= 4*screenWidth space needed
         // l=3:  2^(3-2)= 2*screenWidth space needed
@@ -102,7 +102,7 @@ int main(){
     
 	//drawing the tree on its own layer       
         l=GetDepth(a);
-        DrawTree(a,screenWidth/2,50,pow(2,l-2)*screenWidth,1,c);
+        DrawTree(a,screenWidth/2,50,pow(2,l-2)*screenWidth,1);
 
     //strating ui layer
 		BeginMode2D(UICamera);
