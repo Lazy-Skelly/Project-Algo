@@ -40,9 +40,6 @@ void DrawTree(tree* a,int x,int y,int l,int depth){
     } 
 }
 
-
-
-
 tree* newnode(int x, int Nodes){
     tree* t;
     t=MAKE(tree,1);

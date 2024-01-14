@@ -6,22 +6,7 @@ const int screenHeight = 700;
 
 int main(){
 //variables init used in program	
- 	srand(time(0));
-	
-   Color carray[10];
-   carray[0]=BLUE;
-   carray[1]=DARKGREEN;
-   carray[2]=PINK;
-   carray[3]=GRAY;
-   carray[4]=BLACK;
-   carray[5]=GOLD;
-   carray[6]=REDDO;
-   carray[7]=DARKPURPLE;
-   carray[8]=ORANGE;
-   carray[9]=BROWN;
-  Color c=carray[0];   
-
- 	
+	srand(time(0));
 	
 	tree* a = NULL;
 	tree* FoundTree = NULL;
@@ -83,18 +68,8 @@ int main(){
         BeginMode2D(Camera);
         
         ClearBackground(BRITISH);
-
-
-       if(IsKeyReleased(48)) a->color=carray[0];
-       if(IsKeyReleased(49)) a->color=carray[1];
-       if(IsKeyReleased(50)) a->color=carray[2];
-       if(IsKeyReleased(51)) a->color=carray[3];
-       if(IsKeyReleased(52)) a->color=carray[4];
-       if(IsKeyReleased(53)) a->color=carray[5];
-       if(IsKeyReleased(54)) a->color=carray[6];
-       if(IsKeyReleased(55)) a->color=carray[7];
-       if(IsKeyReleased(56)) a->color=carray[8];
-       if(IsKeyReleased(57)) a->color=carray[9];	
+        
+		
         // l=5:  2^(5-2)= 8*screenWidth space needed
         // l=4:  2^(4-2)= 4*screenWidth space needed
         // l=3:  2^(3-2)= 2*screenWidth space needed
@@ -145,13 +120,7 @@ int main(){
 				PlaySound(ClickSound);
 			}
 		}
-		if(HaveInserted){
-			if(GetTime()-InsertedTime >2){
-				HaveInserted = false;
-				Inserted->color = BLUE;
-				Inserted = NULL;
-			}
-		}
+		
 			
 		//deleting element ui with sounds and colors
 		DrawText("Delete Element",10,140,20,BLACK);
@@ -176,15 +145,6 @@ int main(){
 					PlaySound(NotFoundSound);
 				}								
 			}
-		}
-		if(HaveDeleted){
-			if(GetTime()-DeletedTime > 2){
-				HaveDeleted = false;
-				((tree*)DeleteTree->val)->color = BLUE;
-				Delete(&a,LastDeleted);				
-				FreeTree(&DeleteTree);
-				PlaySound(DestroySound);
-			}	
 		}
 		
 		DrawText("Multi-Delete",10,200,20,BLACK);
@@ -214,19 +174,6 @@ int main(){
 					PlaySound(NotFoundSound);
 				}								
 			}
-		}
-		if(HaveMultiDeleted){
-			if(GetTime()-MultiDeletedTime > 2){
-				HaveMultiDeleted = false;
-				tree* temp = MultiDeleteTree;
-				while(temp){
-					((tree*)temp->val)->color = BLUE;
-					Delete(&a,LastMultiDeleted);
-					temp = temp->child[0];
-				}
-				FreeTree(&MultiDeleteTree);	
-				PlaySound(DestroySound);
-			}	
 		}
 		
 		//searching element ui with sounds and colors
@@ -258,28 +205,6 @@ int main(){
 				
 			}
 		}
-		if(HaveSearch){
-			tree* temp = FoundTree;
-			if(GetTime() - SearchTime< 2){
-				if(FoundTree){
-					int times =0;
-					while(temp){
-						times++;
-						temp = temp->child[0];  
-					}			
-					DrawText(TextFormat("Found: %d time",times),10,310,20,RED);
-				}else{
-					DrawText(TextFormat("Value Not Found!"),10,310,20,RED);
-				}
-			}else{
-				HaveSearch = false;
-				while(temp){
-					((tree*)temp->val)->color = BLUE;
-					temp = temp->child[0];  
-				}
-				FreeTree(&FoundTree);
-			}
-		}
 		
 		//number of random element made into a new tree
 		DrawText("Randomize Tree",10,330,20,BLACK);
@@ -306,14 +231,6 @@ int main(){
 				PlaySound(NotFoundSound);
 			}
 		}		
-		if(Max){
-			if(GetTime()-MaxTime<2){	
-				DrawText(TextFormat("%d",Max->val),70,400,20,BLACK);                    
-			}else{
-				Max->color = BLUE;
-				Max = NULL;
-			}
-		}
 		
 		if(GuiButton((Rectangle){10,440,40,40},"Min")){
 			Min = GetMinimum(a);
@@ -324,14 +241,6 @@ int main(){
 				PlaySound(CorrectSound);
 			}else{
 				PlaySound(NotFoundSound);
-			}
-		}
-		if(Min){
-			if(GetTime()-MinTime<2){	
-				DrawText(TextFormat("%d",Min->val),70,450,20,BLACK);                    
-			}else{
-				Min->color = BLUE;
-				Min = NULL;
 			}
 		}
 		
@@ -418,6 +327,79 @@ int main(){
 		if(Camera.zoom <0.01){
 			Camera.zoom = 0.01;
 		} 	
+		//time keeping
+		if(HaveInserted){
+			if(GetTime()-InsertedTime >2){
+				HaveInserted = false;
+				Inserted->color = BLUE;
+				Inserted = NULL;
+			}
+		}
+		
+		if(HaveDeleted){
+			if(GetTime()-DeletedTime > 2){
+				HaveDeleted = false;
+				((tree*)DeleteTree->val)->color = BLUE;
+				Delete(&a,LastDeleted);				
+				FreeTree(&DeleteTree);
+				PlaySound(DestroySound);
+			}	
+		}
+		
+		if(HaveMultiDeleted){
+			if(GetTime()-MultiDeletedTime > 2){
+				HaveMultiDeleted = false;
+				tree* temp = MultiDeleteTree;
+				while(temp){
+					((tree*)temp->val)->color = BLUE;
+					Delete(&a,LastMultiDeleted);
+					temp = temp->child[0];
+				}
+				FreeTree(&MultiDeleteTree);	
+				PlaySound(DestroySound);
+			}	
+		}
+		
+		if(HaveSearch){
+			tree* temp = FoundTree;
+			if(GetTime() - SearchTime< 2){
+				if(FoundTree){
+					int times =0;
+					while(temp){
+						times++;
+						temp = temp->child[0];  
+					}			
+					DrawText(TextFormat("Found: %d time",times),10,310,20,RED);
+				}else{
+					DrawText(TextFormat("Value Not Found!"),10,310,20,RED);
+				}
+			}else{
+				HaveSearch = false;
+				while(temp){
+					((tree*)temp->val)->color = BLUE;
+					temp = temp->child[0];  
+				}
+				FreeTree(&FoundTree);
+			}
+		}
+		
+		if(Min){
+			if(GetTime()-MinTime<2){	
+				DrawText(TextFormat("%d",Min->val),70,450,20,BLACK);                    
+			}else{
+				Min->color = BLUE;
+				Min = NULL;
+			}
+		}
+		
+		if(Max){
+			if(GetTime()-MaxTime<2){	
+				DrawText(TextFormat("%d",Max->val),70,400,20,BLACK);                    
+			}else{
+				Max->color = BLUE;
+				Max = NULL;
+			}
+		}
 		
        	EndMode2D();
 		EndDrawing();		
